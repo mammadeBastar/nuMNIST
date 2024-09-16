@@ -4,4 +4,4 @@ wrote this neural network using numpy to challenge my fundamental neural net kno
 and also it dosen't work quite perfectly i need to optimize the network a bit to stop it from overfitting and train it again.<br/>
 ###here are some pictures of the ui:<br/>
 ![image](/readme/home.png)
-![image](/redme/uploaded.png)
+![image](/readme/uploaded.png)
