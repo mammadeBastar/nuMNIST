@@ -38,13 +38,36 @@ def forward(w1,b1,w2,b2,w3,b3,x):
 st.header(body= "nu:green[MNIST]", divider= 'green')
 with st.container(border=True):
     st.subheader("upload a picture of a handwritten below")
-    uploaded_file = st.file_uploader(label='')
+    uploaded_file = st.file_uploader(label='upload', label_visibility='hidden')
+    dark_bg = st.toggle("my picture has a dark background")
     if uploaded_file is not None:
+        denoise = st.slider("noise filter:", 0, 200, 20)
+        zoom = st.slider("zoom", 0, 100)
         image = uploaded_file.getvalue()
         image = Image.open(io.BytesIO(image))
+        w, h = image.size
+        image = image.crop((zoom * w / 200, zoom*h / 200, w - (zoom * w/200), w - (zoom * h / 200)))
         image = image.resize((28, 28), 1)
         img = np.array(image)
+        if not dark_bg:
+            img = 255 - img
         img = np.dot(img[...,:3],[0.2989, 0.5870, 0.1140])
+        for i in range(28):
+            for j in range(28):
+                if img[i, j] < denoise:
+                    img[i, j] = 0
+                    continue
+                r = 0
+                for x in [-1,0 ,1]:
+                    for y in [-1, 0, 1]:
+                        try:
+                            if img[i+x, j+y] < 1:
+                                r += 1
+                        except: pass
+                if r >= 7:
+                    img[i, j] = 0
+                if img[i, j] < 100 + denoise:
+                    img[i, j] = 100 + denoise
         fig = px.imshow(img, aspect='equal')
         st.plotly_chart(fig, use_container_width=True)
 
